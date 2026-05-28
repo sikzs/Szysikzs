@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBTI 16型人格测试 | Personality Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .option input[type="radio"]:checked + label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-prev {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-prev:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Result Styles */
+        .result-container {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-type {
+            font-size: 3em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .result-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-description {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .traits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .trait {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .trait-label {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .trait-value {
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            margin-top: 30px;
+        }
+
+        .btn-restart:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .result-type {
+                font-size: 2.5em;
+            }
+
+            .traits {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-prev {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 SBTI 16型人格测试</h1>
+            <p class="subtitle">发现你的独特人格类型 | Discover Your Personality Type</p>
+        </header>
+
+        <!-- Test Container -->
+        <div id="testContainer" class="test-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="questionContainer" class="question-container">
+                <!-- Questions will be inserted here -->
+            </div>
+
+            <div class="button-group">
+                <button class="btn-prev" id="prevBtn" onclick="previousQuestion()">← 上一题</button>
+                <button class="btn-next" id="nextBtn" onclick="nextQuestion()">下一题 →</button>
+            </div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="result-container hidden">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // SBTI Questions based on indoor/outdoor, weather, food, interests
+        const questions = [
+            {
+                id: 1,
+                text: "在周末休息时，你更喜欢：",
+                dimension: "E/I",
+                options: [
+                    { text: "和朋友们一起进行户外活动", value: "E" },
+                    { text: "独自在室内进行安静的活动", value: "I" }
+                ]
+            },
+            {
+                id: 2,
+                text: "面对新的项目时，你倾向于：",
+                dimension: "E/I",
+                options: [
+                    { text: "立即与他人讨论并收集想法", value: "E" },
+                    { text: "首先独自思考和计划", value: "I" }
+                ]
+            },
+            {
+                id: 3,
+                text: "在学习新东西时，你更喜欢：",
+                dimension: "S/N",
+                options: [
+                    { text: "具体的例子和实际应用", value: "S" },
+                    { text: "理论概念和整体框架", value: "N" }
+                ]
+            },
+            {
+                id: 4,
+                text: "对于美食，你最欣赏的是：",
+                dimension: "S/N",
+                options: [
+                    { text: "传统的、熟悉的、经过验证的食物", value: "S" },
+                    { text: "新颖的、创意的、有独特味道的菜肴", value: "N" }
+                ]
+            },
+            {
+                id: 5,
+                text: "在天气影响你的计划时，你会：",
+                dimension: "T/F",
+                options: [
+                    { text: "客观地评估情况并做出理性决定", value: "T" },
+                    { text: "考虑它如何影响他人的感受", value: "F" }
+                ]
+            },
+            {
+                id: 6,
+                text: "在冲突中，你倾向于：",
+                dimension: "T/F",
+                options: [
+                    { text: "用逻辑和事实来解决问题", value: "T" },
+                    { text: "优先考虑关系和他人的感受", value: "F" }
+                ]
+            },
+            {
+                id: 7,
+                text: "对于日常的室内或户外安排，你：",
+                dimension: "J/P",
+                options: [
+                    { text: "喜欢提前计划和列出清单", value: "J" },
+                    { text: "喜欢随机应变和临时调整", value: "P" }
+                ]
+            },
+            {
+                id: 8,
+                text: "关于完成兴趣爱好项目，你：",
+                dimension: "J/P",
+                options: [
+                    { text: "制定详细计划并按时完成", value: "J" },
+                    { text: "按照当前的灵感和兴趣随意进行", value: "P" }
+                ]
+            },
+            {
+                id: 9,
+                text: "在社交聚会中，你：",
+                dimension: "E/I",
+                options: [
+                    { text: "主动与陌生人交谈并扩展社交圈", value: "E" },
+                    { text: "更喜欢与熟人小聚谈心", value: "I" }
+                ]
+            },
+            {
+                id: 10,
+                text: "对于室外运动，你的偏好是：",
+                dimension: "S/N",
+                options: [
+                    { text: "已经掌握的、传统的运动", value: "S" },
+                    { text: "探索新的、刺激的户外活动", value: "N" }
+                ]
+            },
+            {
+                id: 11,
+                text: "当他人寻求建议时，你通常：",
+                dimension: "T/F",
+                options: [
+                    { text: "提供客观、分析性的建议", value: "T" },
+                    { text: "首先考虑他们的感受和需要", value: "F" }
+                ]
+            },
+            {
+                id: 12,
+                text: "对于工作截止日期，你：",
+                dimension: "J/P",
+                options: [
+                    { text: "提前完成以避免压力", value: "J" },
+                    { text: "利用截止日期前的时间灵活安排", value: "P" }
+                ]
+            },
+            {
+                id: 13,
+                text: "在轻松的假期中，你会：",
+                dimension: "E/I",
+                options: [
+                    { text: "参加各种社交活动和聚会", value: "E" },
+                    { text: "享受独处或和亲密的人相处", value: "I" }
+                ]
+            },
+            {
+                id: 14,
+                text: "关于食物选择，你倾向于：",
+                dimension: "S/N",
+                options: [
+                    { text: "坚持你喜欢和熟悉的食物", value: "S" },
+                    { text: "尝试新的、不同文化的美食", value: "N" }
+                ]
+            },
+            {
+                id: 15,
+                text: "当做决定时，最重要的是：",
+                dimension: "T/F",
+                options: [
+                    { text: "分析事实和可能的后果", value: "T" },
+                    { text: "考虑人的价值观和感受", value: "F" }
+                ]
+            },
+            {
+                id: 16,
+                text: "你的理想生活方式是：",
+                dimension: "J/P",
+                options: [
+                    { text: "有序、有计划、明确的目标", value: "J" },
+                    { text: "灵活、开放、充满可能性", value: "P" }
+                ]
+            }
+        ];
+
+        // SBTI Personality Types and Descriptions
+        const personalityTypes = {
+            "ISTJ": {
+                name: "物流师",
+                emoji: "📋",
+                description: "你是一个负责任、可靠的人，喜欢秩序和结构。在工作和生活中，你注重细节和准确性，总是认真完成每一项任务。",
+                traits: {
+                    "社交倾向": "内向型 - 更享受独处和小圈子",
+                    "信息处理": "感觉型 - 关注实际和现实",
+                    "决策方式": "思维型 - 基于逻辑分析",
+                    "生活态度": "判断型 - 有计划和组织性"
+                }
+            },
+            "ISFJ": {
+                name: "护卫者",
+                emoji: "💚",
+                description: "你是一个温暖、体贴的人，对他人充满同情心。你喜欢照顾他人，并在支持和帮助别人中找到满足感。",
+                traits: {
+                    "社交倾向": "内向型 - 喜欢亲密关系",
+                    "信息处理": "感觉型 - 重视具体细节",
+                    "决策方式": "感情型 - 考虑他人感受",
+                    "生活态度": "判断型 - 有责任感"
+                }
+            },
+            "INFJ": {
+                name: "倡导者",
+                emoji: "🎯",
+                description: "你是一个理想主义者，有着坚定的价值观。你富有同情心，致力于为世界做出积极改变。",
+                traits: {
+                    "社交倾向": "内向型 - 深度联系",
+                    "信息处理": "直觉型 - 看到深层意义",
+                    "决策方式": "感情型 - 遵循价值观",
+                    "生活态度": "判断型 - 有目标方向"
+                }
+            },
+            "INTJ": {
+                name: "建筑师",
+                emoji: "🏗️",
+                description: "你是一个战略家和创新者，擅长看到事物的整体图景并规划未来。你独立、聪慧、充满野心。",
+                traits: {
+                    "社交倾向": "内向型 - 独立思想家",
+                    "信息处理": "直觉型 - 理论和未来",
+                    "决策方式": "思维型 - 逻辑思维",
+                    "生活态度": "判断型 - 系统性计划"
+                }
+            },
+            "ISTP": {
+                name: "鉴赏家",
+                emoji: "🔧",
+                description: "你是一个实用主义者和问题解决者，喜欢动手操作和探索事物的工作原理。你冷静、理性、独立。",
+                traits: {
+                    "社交倾向": "内向型 - 不需要社交刺激",
+                    "信息处理": "感觉型 - 实际应用",
+                    "决策方式": "思维型 - 逻辑分析",
+                    "生活态度": "知觉型 - 灵活适应"
+                }
+            },
+            "ISFP": {
+                name: "冒险家",
+                emoji: "🎨",
+                description: "你是一个温和、谦虚的艺术家，有着敏锐的审美观。你享受生活中的美好时刻，富有创造力和同情心。",
+                traits: {
+                    "社交倾向": "内向型 - 小圈子朋友",
+                    "信息处理": "感觉型 - 感官体验",
+                    "决策方式": "感情型 - 个人价值观",
+                    "生活态度": "知觉型 - 自由灵活"
+                }
+            },
+            "INFP": {
+                name: "调停者",
+                emoji: "💭",
+                description: "你是一个创意且充满理想的人，有着强烈的价值观。你同情、真诚，致力于个人成长和帮助他人。",
+                traits: {
+                    "社交倾向": "内向型 - 深度关系",
+                    "信息处理": "直觉型 - 可能性思维",
+                    "决策方式": "感情型 - 价值驱动",
+                    "生活态度": "知觉型 - 开放探索"
+                }
+            },
+            "INTP": {
+                name: "逻辑学家",
+                emoji: "🧠",
+                description: "你是一个思想家和创新者，对理论和知识充满热情。你好奇、独立、总是在寻求理解事物的本质。",
+                traits: {
+                    "社交倾向": "内向型 - 思想交流",
+                    "信息处理": "直觉型 - 理论分析",
+                    "决策方式": "思维型 - 逻辑推理",
+                    "生活态度": "知觉型 - 灵活探索"
+                }
+            },
+            "ESTP": {
+                name: "企业家",
+                emoji: "⚡",
+                description: "你是一个行动派和冒险家，充满活力和热情。你善于抓住机会，在压力下表现出色，总是寻求刺激。",
+                traits: {
+                    "社交倾向": "外向型 - 社交活跃",
+                    "信息处理": "感觉型 - 实际行动",
+                    "决策方式": "思维型 - 效率优先",
+                    "生活态度": "知觉型 - 灵活机动"
+                }
+            },
+            "ESFP": {
+                name: "表演者",
+                emoji: "🎭",
+                description: "你是一个充满热情和魅力的人，喜欢成为聚焦点。你热爱生活，富有表现力，擅长娱乐和激励他人。",
+                traits: {
+                    "社交倾向": "外向型 - 社交中心",
+                    "信息处理": "感觉型 - 感官享受",
+                    "决策方式": "感情型 - 人际关注",
+                    "生活态度": "知觉型 - 即兴享乐"
+                }
+            },
+            "ENFP": {
+                name: "竞选者",
+                emoji: "🌟",
+                description: "你是一个充满热情和创意的人，对生活充满好奇心。你富有感染力，善于启发他人，总是看到事物的可能性。",
+                traits: {
+                    "社交倾向": "外向型 - 人际活动",
+                    "信息处理": "直觉型 - 联想思维",
+                    "决策方式": "感情型 - 共情优先",
+                    "生活态度": "知觉型 - 充满探索"
+                }
+            },
+            "ENTP": {
+                name: "辩手",
+                emoji: "💡",
+                description: "你是一个聪慧、机敏的人，喜欢挑战和智力竞争。你富有创新精神，善于看到事物的多个角度。",
+                traits: {
+                    "社交倾向": "外向型 - 辩论爱好者",
+                    "信息处理": "直觉型 - 理论模式",
+                    "决策方式": "思维型 - 逻辑论证",
+                    "生活态度": "知觉型 - 灵活变通"
+                }
+            },
+            "ESTJ": {
+                name: "总裁",
+                emoji: "👔",
+                description: "你是一个领导力强、组织能力强的人。你对效率和成果充满热情，是天生的管理者和决策者。",
+                traits: {
+                    "社交倾向": "外向型 - 领导风范",
+                    "信息处理": "感觉型 - 实际结果",
+                    "决策方式": "思维型 - 制定规则",
+                    "生活态度": "判断型 - 系统管理"
+                }
+            },
+            "ESFJ": {
+                name: "执政官",
+                emoji: "❤️",
+                description: "你是一个热心、体贴、友好的人，重视和谐与团队合作。你是天生的组织者和他人的支持者。",
+                traits: {
+                    "社交倾向": "外向型 - 社交助力者",
+                    "信息处理": "感觉型 - 关注细节",
+                    "决策方式": "感情型 - 群体和谐",
+                    "生活态度": "判断型 - 责任意识"
+                }
+            },
+            "ENFJ": {
+                name: "主人公",
+                emoji: "🎖️",
+                description: "你是一个富有魅力和同情心的领导者。你激励他人追求梦想，充满热情地为他人服务。",
+                traits: {
+                    "社交倾向": "外向型 - 人际领导",
+                    "信息处理": "直觉型 - 理解潜力",
+                    "决策方式": "感情型 - 价值驱动",
+                    "生活态度": "判断型 - 组织目标"
+                }
+            },
+            "ENTJ": {
+                name: "指挥官",
+                emoji: "⚔️",
+                description: "你是一个天生的领导者和战略家，有明确的目标和远大的抱负。你自信、决定性强，善于激励他人。",
+                traits: {
+                    "社交倾向": "外向型 - 领导实践",
+                    "信息处理": "直觉型 - 战略视野",
+                    "决策方式": "思维型 - 逻辑命令",
+                    "生活态度": "判断型 - 目标导向"
+                }
+            }
+        };
+
+        // State Management
+        let currentQuestion = 0;
+        let answers = {
+            "E/I": { E: 0, I: 0 },
+            "S/N": { S: 0, N: 0 },
+            "T/F": { T: 0, F: 0 },
+            "J/P": { J: 0, P: 0 }
+        };
+
+        function initializeTest() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            const container = document.getElementById("questionContainer");
+
+            let optionsHTML = question.options.map((option, index) => `
+                <div class="option" onclick="selectOption(this, '${option.value}')">
+                    <input type="radio" id="option${index}" name="answer" value="${option.value}">
+                    <label for="option${index}">${option.text}</label>
+                </div>
+            `).join("");
+
+            container.innerHTML = `
+                <div class="question-number">问题 ${currentQuestion + 1} / ${questions.length}</div>
+                <div class="question-text">${question.text}</div>
+                <div class="options">${optionsHTML}</div>
+            `;
+
+            updateProgressBar();
+            updateButtons();
+        }
+
+        function selectOption(element, value) {
+            const parent = element.parentElement;
+            parent.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+            element.classList.add("selected");
+            element.querySelector("input").checked = true;
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector("input[name='answer']:checked");
+            if (!selected) {
+                alert("请先选择一个答案");
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            const value = selected.value;
+            answers[question.dimension][value]++;
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                const question = questions[currentQuestion - 1];
+                const selectedValue = document.querySelector("input[name='answer']:checked")?.value;
+                if (selectedValue) {
+                    answers[question.dimension][selectedValue]--;
+                }
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById("progressFill").style.width = progress + "%";
+        }
+
+        function updateButtons() {
+            document.getElementById("prevBtn").style.display = currentQuestion === 0 ? "none" : "block";
+            document.getElementById("nextBtn").textContent = currentQuestion === questions.length - 1 ? "完成 ✓" : "下一题 →";
+        }
+
+        function showResults() {
+            const result = calculateResult();
+            const personality = personalityTypes[result];
+
+            const container = document.getElementById("resultContainer");
+            const traitsHTML = Object.entries(personality.traits)
+                .map(([key, value]) => `<div class="trait"><div class="trait-label">${key}</div><div class="trait-value">${value}</div></div>`)
+                .join("");
+
+            container.innerHTML = `
+                <div style="font-size: 4em; margin-bottom: 10px;">${personality.emoji}</div>
+                <div class="result-type">${result}</div>
+                <div class="result-name">${personality.name}</div>
+                <div class="result-description">${personality.description}</div>
+                <div class="traits">${traitsHTML}</div>
+                <button class="btn-restart" onclick="restartTest()">重新开始测试</button>
+            `;
+
+            document.getElementById("testContainer").classList.add("hidden");
+            document.getElementById("resultContainer").classList.remove("hidden");
+        }
+
+        function calculateResult() {
+            let result = "";
+            result += answers["E/I"]["E"] >= answers["E/I"]["I"] ? "E" : "I";
+            result += answers["S/N"]["S"] >= answers["S/N"]["N"] ? "S" : "N";
+            result += answers["T/F"]["T"] >= answers["T/F"]["F"] ? "T" : "F";
+            result += answers["J/P"]["J"] >= answers["J/P"]["P"] ? "J" : "P";
+            return result;
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = {
+                "E/I": { E: 0, I: 0 },
+                "S/N": { S: 0, N: 0 },
+                "T/F": { T: 0, F: 0 },
+                "J/P": { J: 0, P: 0 }
+            };
+            document.getElementById("testContainer").classList.remove("hidden");
+            document.getElementById("resultContainer").classList.add("hidden");
+            initializeTest();
+        }
+
+        // Initialize on page load
+        window.addEventListener("DOMContentLoaded", initializeTest);
+    </script>
+</body>
+</html>
